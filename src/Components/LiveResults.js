@@ -10,7 +10,7 @@ import Pause from '@material-ui/icons/Pause';
 import axios from 'axios';
 import moment from 'moment';
 // import { simulation } from '../data/projectSettings';
-const simulation = true;
+const simulation = false;
 
 class LiveResults extends React.Component {
     constructor(props) {

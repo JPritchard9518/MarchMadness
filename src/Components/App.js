@@ -36,7 +36,7 @@ let simGame = {
 
 class App extends React.Component {
     state = {
-        selectedTab: "View Live Scores",
+        selectedTab: "Today's Games",
         selectedGame: /*(simulation) ? simGame :*/ null
     }
     renderSelectedTab() {
