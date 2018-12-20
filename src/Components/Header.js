@@ -28,7 +28,7 @@ class Header extends React.Component {
         return (
             <div className="header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
                 {/* <Typography variant="h6" style={{ color: '#FFF' }}>March Madness</Typography> */}
-                {["Today's Games", "Place Bets", "View Live Scores"].map(item => this.renderNavItem(item))}
+                {["Today's Games"/*, "Place Bets"*/, "View Live Scores"].map(item => this.renderNavItem(item))}
             </div>
         );
     }
