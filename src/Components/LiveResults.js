@@ -44,7 +44,7 @@ class LiveResults extends React.Component {
         let { data } = await axios.get(proxyurl + url, config)
         let homeScore = data.home.points;
         let awayScore = data.away.points;
-        if (data.status === "closed") {
+        if (data.status === "closed" || data.status === "complete") {
             console.log("Game Has Finished")
             this.setState({ gameFinished: true, homeScore, awayScore })
             return clearInterval(this.scoreRetrievalInterval);
