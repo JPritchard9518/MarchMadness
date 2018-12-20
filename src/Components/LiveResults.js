@@ -26,8 +26,8 @@ class LiveResults extends React.Component {
     componentWillMount() {
         if (!simulation) {
             this.retrieveScore()
-            let fourMin = 1000 * 60 * 5;
-            this.scoreRetrievalInterval = setInterval(this.retrieveScore.bind(this), fourMin);
+            let tenMin = 1000 * 60 * 10;
+            this.scoreRetrievalInterval = setInterval(this.retrieveScore.bind(this), tenMin);
         }
     }
     componentWillUnmount() {

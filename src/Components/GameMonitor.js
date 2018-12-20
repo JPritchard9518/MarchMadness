@@ -55,67 +55,67 @@ class GameMonitor extends React.Component {
             game: props.selectedGame,
             selectedGames: [],
             games: [
-                {
-                    "_id": {
-                        "$oid": "5c1b03372e9cba08623706e5"
-                    },
-                    "gameId": "26c01288-652c-4c06-881c-1e70b7392212",
-                    "home": {
-                        "name": "New Mexico State Aggies",
-                        "id": "5016fe1a-9571-4d10-bf5b-b9c1b496bd57",
-                        "score": 0
-                    },
-                    "away": {
-                        "name": "Cal State Northridge Matadors",
-                        "id": "cb732075-23a5-4e71-9037-50a7a002bdb2",
-                        "score": 0
-                    },
-                    "scheduled": {
-                        "$date": "2018-12-20T08:00:00.000Z"
-                    },
-                    "predictions": [
-                        {
-                            "name": "Aaron",
-                            "winner": "Home",
-                            "points": 120
-                        },
-                        {
-                            "name": "Justin",
-                            "winner": "Away",
-                            "points": 132
-                        },
-                        {
-                            "name": "Phil",
-                            "winner": "Home",
-                            "points": 142
-                        },
-                        {
-                            "name": "Jesse",
-                            "winner": "Away",
-                            "points": 112
-                        },
-                        {
-                            "name": "Danny",
-                            "winner": "Home",
-                            "points": 101
-                        },
-                        {
-                            "name": "Jimmy",
-                            "winner": "Home",
-                            "points": 89
-                        },
-                        {
-                            "name": "Thomas",
-                            "winner": "Away",
-                            "points": 70
-                        },
-                        {
-                            "name": "Jack",
-                            "winner": "Home",
-                            "points": 70
-                        }
-                    ]
-                }
+                // {
+                //     "_id": {
+                //         "$oid": "5c1b03372e9cba08623706e5"
+                //     },
+                //     "gameId": "26c01288-652c-4c06-881c-1e70b7392212",
+                //     "home": {
+                //         "name": "New Mexico State Aggies",
+                //         "id": "5016fe1a-9571-4d10-bf5b-b9c1b496bd57",
+                //         "score": 0
+                //     },
+                //     "away": {
+                //         "name": "Cal State Northridge Matadors",
+                //         "id": "cb732075-23a5-4e71-9037-50a7a002bdb2",
+                //         "score": 0
+                //     },
+                //     "scheduled": {
+                //         "$date": "2018-12-20T08:00:00.000Z"
+                //     },
+                //     "predictions": [
+                //         {
+                //             "name": "Aaron",
+                //             "winner": "Home",
+                //             "points": 120
+                //         },
+                //         {
+                //             "name": "Justin",
+                //             "winner": "Away",
+                //             "points": 132
+                //         },
+                //         {
+                //             "name": "Phil",
+                //             "winner": "Home",
+                //             "points": 142
+                //         },
+                //         {
+                //             "name": "Jesse",
+                //             "winner": "Away",
+                //             "points": 112
+                //         },
+                //         {
+                //             "name": "Danny",
+                //             "winner": "Home",
+                //             "points": 101
+                //         },
+                //         {
+                //             "name": "Jimmy",
+                //             "winner": "Home",
+                //             "points": 89
+                //         },
+                //         {
+                //             "name": "Thomas",
+                //             "winner": "Away",
+                //             "points": 70
+                //         },
+                //         {
+                //             "name": "Jack",
+                //             "winner": "Home",
+                //             "points": 70
+                //         }
+                //     ]
+                // }
                 // {
                 //     "_id": {
                 //         "$oid": "5c19bff23d84e7087c0297b5"
@@ -199,7 +199,6 @@ class GameMonitor extends React.Component {
         })
     };
     getGameEntries = async () => {
-        return;
         let url = `/getGamesWatchingToday`
         axios.get(url).then(response => {
             this.setState({ games: response.data.games })
