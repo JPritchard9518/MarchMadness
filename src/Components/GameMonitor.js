@@ -7,6 +7,10 @@ import Input from '@material-ui/core/Input';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import axios from 'axios';
+import Drawer from '@material-ui/core/Drawer';
+import Settings from '@material-ui/icons/Settings';
+
+import Fab from '@material-ui/core/Fab';
 
 import { simulation } from '../data/projectSettings';
 
@@ -54,6 +58,7 @@ class GameMonitor extends React.Component {
         this.state = {
             game: props.selectedGame,
             selectedGames: [],
+            interval: 1000 * 60 * 10, // Ten Minutes Default
             games: [
                 // {
                 //     "_id": {
@@ -211,8 +216,11 @@ class GameMonitor extends React.Component {
         let selectedGames = event.target.value;
         this.setState({ selectedGames })
     }
+    updateIntervalValue(interval) {
+        this.setState({ interval })
+    }
     render() {
-        let { game, gameData, message, nameInput, winningTeamSelect, pointInput } = this.state;
+        let { interval } = this.state;
         let gamesToRender = this.state.games.filter(game => this.state.selectedGames.indexOf(game.gameId) > -1)
         let selectedValues = this.state.selectedGames.map(game => {
             let gameData = this.state.games.find(g => g.gameId === game)
@@ -229,8 +237,10 @@ class GameMonitor extends React.Component {
                     </Typography>
                 </div> */}
                 {/**Render Check List of games to watch */}
-
-                <FormControl style={{ width: '50%' }}>
+                <Fab style={{ position: 'fixed', top: 75, right: 50 }} color="primary" aria-label="Settings" onClick={() => this.setState({ drawerOpen: true })}>
+                    <Settings />
+                </Fab>
+                <FormControl style={{ width: '50%', marginTop: 15 }}>
                     <InputLabel htmlFor="select-multiple-checkbox">Games</InputLabel>
                     <Select
                         multiple
@@ -249,8 +259,36 @@ class GameMonitor extends React.Component {
                 </FormControl>
 
                 {
-                    gamesToRender.map(game => <LiveResults key={game.gameId} selectedGame={game} predictions={game.predictions} />)
+                    gamesToRender.map(game => <LiveResults key={game.gameId} selectedGame={game} predictions={game.predictions} interval={interval} />)
                 }
+                <Drawer anchor="top" open={this.state.drawerOpen} onClose={() => this.setState({ drawerOpen: false })}>
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        // onClick={() => this.setState({ drawerOpen: false })}
+                        onKeyDown={() => this.setState({ drawerOpen: false })}
+                    >
+                        <FormControl style={{ margin: 50, minWidth: 220 }}>
+                            <InputLabel htmlFor="age-simple">Score Retrieval Interval Duration</InputLabel>
+                            <Select
+                                style={{ width: 250 }}
+                                value={this.state.interval}
+                                onChange={(e) => this.updateIntervalValue(e.target.value)}
+                                inputProps={{
+                                    name: 'Interval',
+                                    id: 'interval-simple',
+                                }}
+                            >
+                                <MenuItem value={1000 * 30}>30 Seconds</MenuItem>
+                                <MenuItem value={1000 * 60 * 1}>1 Minute</MenuItem>
+                                <MenuItem value={1000 * 60 * 3}>3 Minutes</MenuItem>
+                                <MenuItem value={1000 * 60 * 5}>5 Minutes</MenuItem>
+                                <MenuItem value={1000 * 60 * 10}>10 Minutes</MenuItem>
+                                <MenuItem value={1000 * 60 * 15}>15 Minutes</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                </Drawer>
             </div >
 
         )

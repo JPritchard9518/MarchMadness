@@ -11,14 +11,21 @@ import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { simulation } from '../data/projectSettings';
 
+let API_KEYS_MASTER = ["yss8gr8c6txmhgqa7djftarr", "n2bx7ge233k8x8utgsvtwy9w", "62jzddc8qy2y6k6pqz6ce8qp"];
+
+let API_KEYS = [...API_KEYS_MASTER];
+
+let API_KEY = API_KEYS.pop();
 class Games extends React.Component {
     state = {
         loaded: (simulation) ? true : false,
         games: (simulation) ? games : null,
         selectedGame: null,
     }
-    componentDidMount = async () => {
-
+    componentDidMount = () => {
+        this.getGames()
+    };
+    async getGames() {
         // if (!simulation) {
         let now = moment();
         let year = now.year();
@@ -30,11 +37,21 @@ class Games extends React.Component {
         if (cacheResult.data.updateCache) {
             setTimeout(async () => {
                 const proxyurl = "https://cors-anywhere.herokuapp.com/";
-                const url = `http://api.sportradar.us/ncaamb/trial/v4/en/games/${year}/${month}/${day}/schedule.json?api_key=yss8gr8c6txmhgqa7djftarr`;
+                const url = `http://api.sportradar.us/ncaamb/trial/v4/en/games/${year}/${month}/${day}/schedule.json?api_key=${API_KEY}`;
                 const config = {
                     headers: { 'Access-Control-Allow-Origin': '*' }
                 };
-                let result = await axios.get(proxyurl + url, config)
+                let result;
+                try {
+                    result = await axios.get(proxyurl + url, config)
+                } catch (err) {
+                    console.log(err)
+                    if (API_KEYS.length === 0)
+                        API_KEYS = [...API_KEYS_MASTER]
+                    API_KEY = API_KEYS.pop()
+                    return this.getGames()
+                }
+
                 let { games } = result.data;
                 let today = moment().startOf('day');
                 let tomorrow = moment().add(1, 'day').startOf('day')
@@ -46,7 +63,7 @@ class Games extends React.Component {
             return this.setState({ games: cacheResult.data.gameObj.games, loaded: true })
         }
         // }
-    };
+    }
     gameClick(game) {
         this.props.selectGame(game)
     }

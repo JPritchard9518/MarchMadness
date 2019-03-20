@@ -4,6 +4,7 @@ import Header from './Header';
 import Games from './Games';
 import GameMonitor from './GameMonitor';
 import PlaceBets from './PlaceBets';
+
 import { simulation } from '../data/projectSettings';
 
 let simGame = {

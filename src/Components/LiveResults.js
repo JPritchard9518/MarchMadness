@@ -4,13 +4,22 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import Fab from '@material-ui/core/Fab';
+import Refresh from '@material-ui/icons/Refresh';
 import Play from '@material-ui/icons/PlayArrow';
-import Forward from '@material-ui/icons/FastForward'
+import Forward from '@material-ui/icons/FastForward';
 import Pause from '@material-ui/icons/Pause';
+
+
 import axios from 'axios';
 import moment from 'moment';
 // import { simulation } from '../data/projectSettings';
 const simulation = false;
+
+let API_KEYS_MASTER = ["yss8gr8c6txmhgqa7djftarr", "n2bx7ge233k8x8utgsvtwy9w", "62jzddc8qy2y6k6pqz6ce8qp"];
+
+let API_KEYS = [...API_KEYS_MASTER];
+
+let API_KEY = API_KEYS.pop();
 
 class LiveResults extends React.Component {
     constructor(props) {
@@ -20,28 +29,64 @@ class LiveResults extends React.Component {
             predictions: props.predictions || [],
             homeScore: (simulation) ? 30 : 0,
             awayScore: (simulation) ? 39 : 0,
-            gameFinished: false
+            gameFinished: false,
+            interval: props.interval, // Ten Minutes Default
+            drawerOpen: false
         }
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.interval !== this.state.interval) {
+            this.updateInterval(nextProps.interval)
+        }
+        this.setState({ predictions: nextProps.predictions })
     }
     componentWillMount() {
         if (!simulation) {
             this.retrieveScore()
-            let tenMin = 1000 * 60 * 10;
-            this.scoreRetrievalInterval = setInterval(this.retrieveScore.bind(this), tenMin);
+            this.startRetrievalInterval();
         }
     }
     componentWillUnmount() {
+        this.clearRetrievalInterval()
+    }
+    startRetrievalInterval() {
+        let { interval } = this.state;
+        this.scoreRetrievalInterval = setInterval(this.retrieveScore.bind(this), interval);
+    }
+    clearRetrievalInterval() {
         clearInterval(this.scoreRetrievalInterval)
+    }
+    updateInterval(interval) {
+        this.setState({ interval }, () => {
+            this.clearRetrievalInterval()
+            this.startRetrievalInterval()
+            this.retrieveScore()
+        })
+    }
+    refresh() {
+        this.clearRetrievalInterval()
+        this.startRetrievalInterval()
+        this.retrieveScore()
     }
     async retrieveScore() {
         let { gameId } = this.state.game;
-        console.log(`retrieving score:  ${moment().toDate()} - ${gameId}`)
+        console.log(`retrieving score:  ${moment().toDate()} - ${gameId} ----- ${API_KEY}`)
         const proxyurl = "https://cors-anywhere.herokuapp.com/";
-        const url = `http://api.sportradar.us/ncaamb/trial/v4/en/games/${gameId}/boxscore.json?api_key=yss8gr8c6txmhgqa7djftarr`;
+        const url = `http://api.sportradar.us/ncaamb/trial/v4/en/games/${gameId}/boxscore.json?api_key=${API_KEY}`;
         const config = {
             headers: { 'Access-Control-Allow-Origin': '*' }
         };
-        let { data } = await axios.get(proxyurl + url, config)
+        let data;
+        try {
+            let result = await axios.get(proxyurl + url, config);
+            data = result.data
+        } catch (err) {
+            console.log(err)
+            if (API_KEYS.length === 0)
+                API_KEYS = [...API_KEYS_MASTER]
+            API_KEY = API_KEYS.pop()
+            return this.retrieveScore()
+        }
         let homeScore = data.home.points;
         let awayScore = data.away.points;
         if (data.status === "closed" || data.status === "complete") {
@@ -65,9 +110,7 @@ class LiveResults extends React.Component {
         else
             return this.setState({ awayScore: awayScore + pointsScored })
     }
-    componentWillReceiveProps(nextProps) {
-        this.setState({ predictions: nextProps.predictions })
-    }
+
     generateLeftRow({ name, points, winner }, index, stillIn) {
         let winningTeam = (this.state.homeScore > this.state.awayScore) ? "Home" : "Away";
         let color = (stillIn && winner === winningTeam && index === 0) ? 'RGBA(40, 247, 45, .1)' : 'RGBA(252, 42, 28, .1)';
@@ -129,16 +172,14 @@ class LiveResults extends React.Component {
     }
     renderFinalResults({ awayIn, homeIn, awayOut, homeOut, gameFinished }) {
         if (!gameFinished) return null;
-
         let resultsArr = this.generateFinalResults({ awayIn, homeIn, awayOut, homeOut })
         return (
-            <div>
+            <div style={{ paddingTop: '25px' }}>
                 <Typography variant="h3">Final Standings</Typography>
                 <List style={{ width: '100%', borderRight: '.5px solid', borderRightColor: 'rgba(0,0,0,0.12)' }}>
                     {resultsArr.map((pred, index) => this.generateFinalRow(pred, index))}
                 </List>
             </div>
-
         )
     }
     getScoreColor(defendant, oppononent) {
@@ -236,11 +277,17 @@ class LiveResults extends React.Component {
 
         return (
             <div style={{ width: `${75}%`, paddingBottom: '30px', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ padding: `${25}px` }}>
-                    <Typography variant="h4" id="modal-title">
-                        Live Results
-                    </Typography>
-                </div>
+                {!gameFinished &&
+                    <div style={{ padding: `${25}px`, width: '100%' }}>
+                        <Typography style={{ textAlign: 'center' }} variant="h4" id="modal-title">
+                            Live Results
+                        </Typography>
+                        <Fab style={{ position: 'relative', float: 'left' }} color="primary" aria-label="Refresh" onClick={() => this.refresh()}>
+                            <Refresh />
+                        </Fab>
+                    </div>
+                }
+
                 {simulation && !gameFinished &&
                     <div style={{ display: 'flex', width: '300px', justifyContent: 'space-around', alignItems: 'center', flexDirection: 'column' }}>
                         <div style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -311,7 +358,6 @@ class LiveResults extends React.Component {
                         {awayOut.map((pred, index) => this.generateRightRow(pred, index, false))}
                     </List>
                 </div>
-
             </div >
 
         )
