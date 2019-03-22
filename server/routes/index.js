@@ -60,8 +60,8 @@ router.get('/games', (req, res) => {
 })
 
 router.get('/getGamesWatchingToday', async (req, res) => {
-    let start = moment()/*.subtract(1, 'days')*/.startOf('day').toDate();
-    let end = moment().add(2, 'days').startOf('day').toDate();
+    let start = moment().subtract(4, 'days').startOf('day').toDate();
+    let end = moment().add(3, 'days').startOf('day').toDate();
     let games = await dbClient.db().collection('watching').find({ scheduled: { $gte: start, $lt: end } }).toArray();
     res.json({ games })
 })
